@@ -1,0 +1,25 @@
+main{width:min(1280px,100%,calc((100dvh - 135px)*1.77778 + 24px))}
+#cover{z-index:6}
+#title-screen{position:absolute;inset:0;z-index:4;background:linear-gradient(90deg,#fff6e9 0%,#fff6e9f5 30%,#fff6e9a8 48%,#fff6e910 72%);color:#244b49;transition:opacity .5s ease}
+#title-screen[hidden],#how-panel[hidden],#title-menu[hidden]{display:none}
+#title-screen.leaving{opacity:0}
+.title-copy{position:absolute;left:5%;top:12%;width:48%}
+.title-tag{display:inline-block;margin:0 0 19px;font-size:13px;font-weight:750;letter-spacing:.14em;border-top:2px solid #b5894b;border-bottom:2px solid #b5894b;padding:7px 1px}
+#title-heading{font-size:clamp(32px,5vw,68px);line-height:1.28;letter-spacing:.1em;margin:0;font-weight:900;text-shadow:0 2px #fff8ed}
+.title-sub{font-size:clamp(15px,1.7vw,23px);font-weight:700;letter-spacing:.12em;margin:15px 0 9px}
+.title-note{font-size:clamp(12px,1.1vw,15px);line-height:1.8;margin:0 0 26px;color:#476761}
+.title-actions{display:flex;flex-direction:column;gap:11px;width:min(290px,90%)}
+.title-actions button{font-size:21px;letter-spacing:.16em;border-radius:14px;padding:14px 22px;border:1px solid #57756a;box-shadow:0 3px 0 #45685e25}
+.title-actions #start-button{background:#285f57;color:#fff8e9;border-color:#285f57;box-shadow:0 4px 0 #163e3a}
+.title-actions #start-button:hover{background:#367b6c}.title-actions button:active{transform:translateY(2px)}
+.title-stamp{position:absolute;right:4%;top:5%;padding:11px 16px;background:#fff8e9ec;border:1px dashed #b29863;border-radius:8px;text-align:center;transform:rotate(3deg);font-size:13px;line-height:1.7;font-weight:700}
+.title-stamp b{display:block;font-size:17px;color:#996a2d}
+.title-team{position:absolute;right:3%;bottom:5%;width:43%;display:flex;gap:10px;padding:12px;background:#fff8e9ef;border:1px solid #d5c9a8;border-radius:16px;box-shadow:0 4px 15px #314c4320}
+.title-team>div{flex:1;display:flex;align-items:center;gap:10px;font-size:12px;line-height:1.8}.title-team strong{display:block;font-size:16px}.title-team svg{width:58px;height:58px;flex-shrink:0}.title-team>div+div{border-left:1px dashed #c2baa4;padding-left:12px}
+#how-panel{position:absolute;inset:6%;padding:30px 34px;background:#fff9ed;border:1px solid #c8ba99;border-radius:22px;box-shadow:0 15px 50px #243e4b30;overflow:auto}
+#how-panel h2{margin:0 0 7px;font-size:30px;letter-spacing:.12em}#how-panel>p{margin:0 0 20px;line-height:1.7}
+.how-roles{display:grid;grid-template-columns:1fr 1fr;gap:18px}.how-role{border:1px solid #c6d4ba;border-radius:15px;background:#edf2df;padding:18px 23px}.how-role.drone{background:#fbefcb;border-color:#dbc691}.how-role h3{font-size:23px;margin:0 0 13px}.how-role p{font-size:16px;line-height:1.7;margin:8px 0}.how-role small{display:block;font-size:14px;line-height:1.8;margin-top:12px}
+.how-example{background:#e0eee3;padding:13px 18px;border-radius:12px;font-size:16px;line-height:1.8;margin:17px 0 13px}.how-footer{display:flex;align-items:center;justify-content:space-between;gap:16px}.how-footer p{font-size:13px;line-height:1.8;margin:0}#how-back{font-size:17px;padding:12px 26px;white-space:nowrap}
+kbd{display:inline-block;font:inherit;font-weight:800;padding:1px 8px;border:1px solid #acb9a5;border-bottom-width:3px;border-radius:5px;background:#fffdf5;color:#35574f}
+@media(max-width:1100px),(max-height:800px){.title-copy{top:8%}.title-tag{margin-bottom:10px;font-size:11px}.title-note{margin-bottom:17px}.title-actions button{font-size:17px;padding:10px 20px}.title-team{width:44%;padding:8px;gap:5px}.title-team svg{width:38px;height:38px}.title-team strong{font-size:13px}.title-team>div{font-size:10px;gap:6px}.title-team>div+div{padding-left:6px}#how-panel{inset:4%;padding:20px}#how-panel h2{font-size:23px}.how-role{padding:12px}.how-role h3{font-size:18px}.how-role p{font-size:14px}.how-role small,.how-footer p{font-size:12px}.how-example{font-size:14px;margin:12px 0}.title-stamp{font-size:11px}.title-stamp b{font-size:14px}}
+@media(prefers-reduced-motion:reduce){#title-screen{transition:none}.title-actions button:active{transform:none}}

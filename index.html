@@ -17,15 +17,17 @@
     #retry{margin-top:12px}footer{display:flex;justify-content:space-between;gap:10px;font-size:12px;line-height:1.7;padding:9px 2px}#hint{font-weight:650}a{color:#355d65}#stage:fullscreen{background:#1e343e;display:flex;align-items:center;justify-content:center;border-radius:0;width:100vw;height:100vh;aspect-ratio:auto}#stage:fullscreen #game{width:min(100vw,177.777vh);height:min(100vh,56.25vw)}
     @media(max-width:680px){header{align-items:flex-start}header p{display:none}button{padding:7px 9px;font-size:12px}h1{font-size:15px}main{padding:8px}footer{font-size:11px;display:block}.card{padding:18px}.card h2{font-size:19px}.card p{font-size:12px}}
   </style>
+  <link rel="stylesheet" href="title.css">
 </head>
 <body>
 <main>
   <header><div><h1>おもちゃ救助隊</h1><p>ふたりで、ただいま。 · キーボード ＋ マウス</p></div><nav aria-label="ゲームの操作"><button id="pause" disabled>ひとやすみ</button><button id="sound" disabled aria-pressed="false">音 ON</button><button id="fullscreen" disabled>全画面</button></nav></header>
-  <section id="stage" aria-label="協力ゲーム"><canvas id="game" width="1280" height="720" tabindex="0" aria-label="おもちゃ救助隊。クリックで開始。ロボットはWASDまたは矢印とE、ドローンはマウスと左ドラッグ。"></canvas>
-    <div id="cover"><div class="card"><div class="mark" aria-hidden="true">◉ ─ ◉</div><h2 id="load-title">小さな世界を じゅんび中</h2><p id="load-note">1P はキーボード、2P はマウス。<br>読み込みが終わったら、画面をクリック！</p><div class="bar" role="progressbar" aria-label="読み込み" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress"></span></div><span id="percent" aria-live="polite">0%</span><button id="retry" hidden>もう一度読み込む</button></div></div>
+  <section id="stage" aria-label="協力ゲーム"><canvas id="game" width="1280" height="720" tabindex="-1" inert aria-label="おもちゃ救助隊。ロボットはWASDまたは矢印とE、ドローンはマウスと左ドラッグ。"></canvas>
+    <div id="cover"><div class="card"><div class="mark" aria-hidden="true">◉ ─ ◉</div><h2 id="load-title">小さな世界を じゅんび中</h2><p id="load-note">1P はキーボード、2P はマウス。<br>もうすぐ、ふたりの ぼうけんが はじまるよ。</p><div class="bar" role="progressbar" aria-label="読み込み" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress"></span></div><span id="percent" aria-live="polite">0%</span><button id="retry" hidden>もう一度読み込む</button></div></div>
   </section>
   <footer><span id="hint" aria-live="polite">初回の読み込みには少し時間がかかります。</span><span>WASD / 矢印 · E · 左ドラッグ · Esc おやすみ<br><a href="OFL-NotoSansJP.txt">フォントライセンス</a></span></footer>
 </main>
+<script src="title.js"></script>
 <script>
 (() => {
   const canvas=document.getElementById('game'),stage=document.getElementById('stage'),cover=document.getElementById('cover'),hint=document.getElementById('hint');
@@ -34,11 +36,11 @@
   function failure(detail){if(failed)return;failed=true;cover.hidden=false;document.getElementById('load-title').textContent='起動できませんでした';document.getElementById('load-note').textContent='Chromeを更新し、ほかの重いタブを閉じて、もう一度お試しください。WebGL2とWebAssemblyが使えるパソコンが必要です。';document.querySelector('.bar').hidden=true;document.getElementById('percent').hidden=true;document.getElementById('retry').hidden=false;window.toyLoad.error=String(detail);console.error('Toy Rescue startup:',detail);}
   document.getElementById('retry').onclick=()=>location.reload();
   const probe=document.createElement('canvas');if(!window.WebAssembly||!probe.getContext('webgl2')){failure('WebGL2 or WebAssembly unavailable');return;}
-  window.toyStatusChanged=s=>{const message=s.ending?'3びき おかえり！ 画面をクリックして、もう一度。':s.opening?'ふたりの役割を見てみよう。クリックで導入を飛ばせます。':s.paused?'ゲームをクリックして再開。キーとマウスを一度はなそう。':!s.started?'ゲームをクリックして はじめよう。':document.pointerLockElement===canvas?'Escでマウスを離して、ひとやすみ。':'ゲームをクリックして マウスをつかおう。';if(message!==lastHint){hint.textContent=lastHint=message;}};
+  window.toyStatusChanged=s=>{if(window.toyTitle.active){const message=window.toyTitle.hint();if(message!==lastHint)hint.textContent=lastHint=message;return;}const message=s.ending?'3びき おかえり！ 画面をクリックして、もう一度。':s.opening?'ふたりの役割を見てみよう。クリックで導入を飛ばせます。':s.paused?'ゲームをクリックして再開。キーとマウスを一度はなそう。':!s.started?'ゲームをクリックして はじめよう。':document.pointerLockElement===canvas?'Escでマウスを離して、ひとやすみ。':'ゲームをクリックして マウスをつかおう。';if(message!==lastHint){hint.textContent=lastHint=message;}};
   let awaitingPointer=false;
   function pointerRetry(){awaitingPointer=false;hint.textContent='少し待って、もう一度ゲームをクリックしよう。';}
   function interact(){
-    if(!instance)return;canvas.focus();const s=window.toyStatus||{};
+    if(!instance||window.toyTitle.active)return;canvas.focus();const s=window.toyStatus||{};
     if(s.started&&!s.opening&&!s.ending&&document.pointerLockElement!==canvas){
       awaitingPointer=true;
       try{const request=canvas.requestPointerLock();if(request&&request.catch)request.catch(pointerRetry);}catch{pointerRetry();}
@@ -52,7 +54,7 @@
   pause.onclick=()=>{if(instance)instance.SendMessage('ToyRescueRuntime','WebPause');canvas.focus();};
   sound.onclick=()=>{if(instance){instance.SendMessage('ToyRescueRuntime','WebMute');muted=!muted;sound.textContent=muted?'音 OFF':'音 ON';sound.setAttribute('aria-pressed',String(muted));}canvas.focus();};
   canvas.addEventListener('keydown',event=>{if(instance&&event.code==='KeyM'&&!event.repeat){muted=!muted;sound.textContent=muted?'音 OFF':'音 ON';sound.setAttribute('aria-pressed',String(muted));}});
-  full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await stage.requestFullscreen();canvas.focus();}catch{hint.textContent='全画面にできませんでした。そのままの大きさでも遊べます。';}};
+  full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await stage.requestFullscreen();if(window.toyTitle.active)window.toyTitle.focus();else canvas.focus();}catch{hint.textContent='全画面にできませんでした。そのままの大きさでも遊べます。';}};
   document.addEventListener('fullscreenchange',()=>full.textContent=document.fullscreenElement?'全画面をおわる':'全画面');
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&instance)instance.SendMessage('ToyRescueRuntime','WebPause');});
   window.addEventListener('blur',()=>{if(instance)instance.SendMessage('ToyRescueRuntime','WebPause');});
@@ -60,7 +62,7 @@
   script.onload=()=>createUnityInstance(canvas,{
     dataUrl:'Build/Publish.data.unityweb',frameworkUrl:'Build/Publish.framework.js.unityweb',codeUrl:'Build/Publish.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',companyName:'Toy Rescue Workshop',productName:'Toy Rescue',productVersion:'9-web',matchWebGLToCanvasSize:false,devicePixelRatio:1,
     showBanner:(message,type)=>{if(type==='error')failure(message);else console.warn(message);}
-  },progress=>{const n=Math.round(progress*100);document.getElementById('progress').style.width=n+'%';document.querySelector('.bar').setAttribute('aria-valuenow',String(n));document.getElementById('percent').textContent=n+'%';}).then(game=>{instance=game;window.toyUnity=game;window.toyLoad.ready=true;window.toyLoad.readyMs=performance.now()-window.toyLoad.started;cover.hidden=true;pause.disabled=sound.disabled=full.disabled=false;hint.textContent='ゲームをクリックして はじめよう。';}).catch(failure);
+  },progress=>{const n=Math.round(progress*100);document.getElementById('progress').style.width=n+'%';document.querySelector('.bar').setAttribute('aria-valuenow',String(n));document.getElementById('percent').textContent=n+'%';}).then(game=>{instance=game;window.toyUnity=game;window.toyLoad.ready=true;window.toyLoad.readyMs=performance.now()-window.toyLoad.started;cover.hidden=true;full.disabled=false;window.toyTitle.ready(game);hint.textContent=window.toyTitle.hint();}).catch(failure);
   document.body.appendChild(script);
   setTimeout(()=>{if(!instance&&!failed)document.getElementById('load-note').textContent='まだ読み込み中です。通信がゆっくりな場合、もう少し時間がかかります。';},25000);
 })();

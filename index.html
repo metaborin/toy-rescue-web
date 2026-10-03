@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>おもちゃ救助隊 — ふたりで、ただいま。</title>
+  <meta name="description" content="キーボードのロボットとマウスの磁力ドローン。ふたりで4つの島を進み、おもちゃを助けよう。">
+  <style>
+    :root{color-scheme:light;--ink:#243e4b;--cream:#fff8e9;--mint:#b3decb;--gold:#f0cd7d}
+    *{box-sizing:border-box}body{margin:0;background:#dce6dc;color:var(--ink);font-family:system-ui,sans-serif}
+    main{width:min(1280px,100%);margin:0 auto;padding:12px 12px 8px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    h1{font-size:19px;margin:0;letter-spacing:.06em}header p{font-size:12px;margin:3px 0 0}nav{display:flex;gap:7px;flex-wrap:wrap}
+    button{font:inherit;font-size:14px;font-weight:650;background:var(--cream);color:var(--ink);border:1px solid #829c92;border-radius:10px;padding:9px 14px;cursor:pointer}button:hover{background:var(--mint)}button:focus-visible{outline:3px solid #285d67;outline-offset:2px}button:disabled{opacity:.5;cursor:wait}
+    #stage{position:relative;width:100%;aspect-ratio:16/9;background:#9eaaa5;border-radius:15px;overflow:hidden;box-shadow:0 5px 22px #243e4b20}
+    #game{display:block;width:100%;height:100%;outline:none}#cover{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(140deg,#f4eedc,#d6e6dc)}
+    #cover[hidden]{display:none}.card{width:min(540px,88%);background:var(--cream);border:1px solid #d8d8c6;padding:32px;border-radius:22px;text-align:center;box-shadow:0 12px 40px #314c4314}.mark{font-size:40px;color:#608b79}.card h2{font-size:26px;margin:12px 0}.card p{line-height:1.8;font-size:15px}.bar{height:10px;border-radius:20px;background:#e2e7d8;overflow:hidden;margin:22px 0 9px}.bar span{display:block;height:100%;width:0;background:#74ad96;transition:width .15s}
+    #retry{margin-top:12px}footer{display:flex;justify-content:space-between;gap:10px;font-size:12px;line-height:1.7;padding:9px 2px}#hint{font-weight:650}a{color:#355d65}#stage:fullscreen{background:#1e343e;display:flex;align-items:center;justify-content:center;border-radius:0;width:100vw;height:100vh;aspect-ratio:auto}#stage:fullscreen #game{width:min(100vw,177.777vh);height:min(100vh,56.25vw)}
+    @media(max-width:680px){header{align-items:flex-start}header p{display:none}button{padding:7px 9px;font-size:12px}h1{font-size:15px}main{padding:8px}footer{font-size:11px;display:block}.card{padding:18px}.card h2{font-size:19px}.card p{font-size:12px}}
+  </style>
+</head>
+<body>
+<main>
+  <header><div><h1>おもちゃ救助隊</h1><p>ふたりで、ただいま。 · キーボード ＋ マウス</p></div><nav aria-label="ゲームの操作"><button id="pause" disabled>ひとやすみ</button><button id="sound" disabled aria-pressed="false">音 ON</button><button id="fullscreen" disabled>全画面</button></nav></header>
+  <section id="stage" aria-label="協力ゲーム"><canvas id="game" width="1280" height="720" tabindex="0" aria-label="おもちゃ救助隊。クリックで開始。ロボットはWASDまたは矢印とE、ドローンはマウスと左ドラッグ。"></canvas>
+    <div id="cover"><div class="card"><div class="mark" aria-hidden="true">◉ ─ ◉</div><h2 id="load-title">小さな世界を じゅんび中</h2><p id="load-note">1P はキーボード、2P はマウス。<br>読み込みが終わったら、画面をクリック！</p><div class="bar" role="progressbar" aria-label="読み込み" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress"></span></div><span id="percent" aria-live="polite">0%</span><button id="retry" hidden>もう一度読み込む</button></div></div>
+  </section>
+  <footer><span id="hint" aria-live="polite">初回の読み込みには少し時間がかかります。</span><span>WASD / 矢印 · E · 左ドラッグ · Esc おやすみ<br><a href="OFL-NotoSansJP.txt">フォントライセンス</a></span></footer>
+</main>
+<script>
+(() => {
+  const canvas=document.getElementById('game'),stage=document.getElementById('stage'),cover=document.getElementById('cover'),hint=document.getElementById('hint');
+  const pause=document.getElementById('pause'),sound=document.getElementById('sound'),full=document.getElementById('fullscreen');
+  let instance,failed=false,muted=false,lastHint=''; window.toyLoad={started:performance.now(),ready:false};
+  function failure(detail){if(failed)return;failed=true;cover.hidden=false;document.getElementById('load-title').textContent='起動できませんでした';document.getElementById('load-note').textContent='Chromeを更新し、ほかの重いタブを閉じて、もう一度お試しください。WebGL2とWebAssemblyが使えるパソコンが必要です。';document.querySelector('.bar').hidden=true;document.getElementById('percent').hidden=true;document.getElementById('retry').hidden=false;window.toyLoad.error=String(detail);console.error('Toy Rescue startup:',detail);}
+  document.getElementById('retry').onclick=()=>location.reload();
+  const probe=document.createElement('canvas');if(!window.WebAssembly||!probe.getContext('webgl2')){failure('WebGL2 or WebAssembly unavailable');return;}
+  window.toyStatusChanged=s=>{const message=s.ending?'3びき おかえり！ 画面をクリックして、もう一度。':s.opening?'ふたりの役割を見てみよう。クリックで導入を飛ばせます。':s.paused?'ゲームをクリックして再開。キーとマウスを一度はなそう。':!s.started?'ゲームをクリックして はじめよう。':document.pointerLockElement===canvas?'Escでマウスを離して、ひとやすみ。':'ゲームをクリックして マウスをつかおう。';if(message!==lastHint){hint.textContent=lastHint=message;}};
+  let awaitingPointer=false;
+  function pointerRetry(){awaitingPointer=false;hint.textContent='少し待って、もう一度ゲームをクリックしよう。';}
+  function interact(){
+    if(!instance)return;canvas.focus();const s=window.toyStatus||{};
+    if(s.started&&!s.opening&&!s.ending&&document.pointerLockElement!==canvas){
+      awaitingPointer=true;
+      try{const request=canvas.requestPointerLock();if(request&&request.catch)request.catch(pointerRetry);}catch{pointerRetry();}
+      return;
+    }
+    instance.SendMessage('ToyRescueRuntime','WebInteract');
+  }
+  document.addEventListener('pointerlockchange',()=>{if(awaitingPointer&&document.pointerLockElement===canvas){awaitingPointer=false;instance.SendMessage('ToyRescueRuntime','WebInteract');}});
+  document.addEventListener('pointerlockerror',pointerRetry);
+  canvas.addEventListener('pointerdown',interact);canvas.addEventListener('contextmenu',e=>e.preventDefault());
+  pause.onclick=()=>{if(instance)instance.SendMessage('ToyRescueRuntime','WebPause');canvas.focus();};
+  sound.onclick=()=>{if(instance){instance.SendMessage('ToyRescueRuntime','WebMute');muted=!muted;sound.textContent=muted?'音 OFF':'音 ON';sound.setAttribute('aria-pressed',String(muted));}canvas.focus();};
+  canvas.addEventListener('keydown',event=>{if(instance&&event.code==='KeyM'&&!event.repeat){muted=!muted;sound.textContent=muted?'音 OFF':'音 ON';sound.setAttribute('aria-pressed',String(muted));}});
+  full.onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await stage.requestFullscreen();canvas.focus();}catch{hint.textContent='全画面にできませんでした。そのままの大きさでも遊べます。';}};
+  document.addEventListener('fullscreenchange',()=>full.textContent=document.fullscreenElement?'全画面をおわる':'全画面');
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&instance)instance.SendMessage('ToyRescueRuntime','WebPause');});
+  window.addEventListener('blur',()=>{if(instance)instance.SendMessage('ToyRescueRuntime','WebPause');});
+  const script=document.createElement('script');script.src='Build/Publish.loader.js';script.onerror=()=>failure('Loader unavailable');
+  script.onload=()=>createUnityInstance(canvas,{
+    dataUrl:'Build/Publish.data.unityweb',frameworkUrl:'Build/Publish.framework.js.unityweb',codeUrl:'Build/Publish.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',companyName:'Toy Rescue Workshop',productName:'Toy Rescue',productVersion:'9-web',matchWebGLToCanvasSize:false,devicePixelRatio:1,
+    showBanner:(message,type)=>{if(type==='error')failure(message);else console.warn(message);}
+  },progress=>{const n=Math.round(progress*100);document.getElementById('progress').style.width=n+'%';document.querySelector('.bar').setAttribute('aria-valuenow',String(n));document.getElementById('percent').textContent=n+'%';}).then(game=>{instance=game;window.toyUnity=game;window.toyLoad.ready=true;window.toyLoad.readyMs=performance.now()-window.toyLoad.started;cover.hidden=true;pause.disabled=sound.disabled=full.disabled=false;hint.textContent='ゲームをクリックして はじめよう。';}).catch(failure);
+  document.body.appendChild(script);
+  setTimeout(()=>{if(!instance&&!failed)document.getElementById('load-note').textContent='まだ読み込み中です。通信がゆっくりな場合、もう少し時間がかかります。';},25000);
+})();
+</script>
+</body></html>

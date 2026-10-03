@@ -1,0 +1,2 @@
+Noto Sans JP Regular — SIL Open Font License 1.1; see OFL-NotoSansJP.txt. Source: https://github.com/notofonts/noto-cjk/tree/main/Sans/SubsetOTF/JP
+Unity runtime and bundled components: https://unity.com/legal/third-party-notices

@@ -45,12 +45,12 @@
     if(event.code==='Space'||event.code==='Enter'){
       event.preventDefault();event.stopPropagation();
       const button=document.activeElement;
-      if(!event.repeat&&[start,help,back,document.getElementById('quality'),document.getElementById('fullscreen')].includes(button)&&!button.disabled)button.click();
+      if(!event.repeat&&[start,help,back,document.getElementById('quality'),document.getElementById('fullscreen'),document.getElementById('pwa-toggle')].includes(button)&&!button.disabled)button.click();
       return;
     }
     if(event.key==='Escape'&&!how.hidden){event.preventDefault();closeHow();return;}
     if(event.key==='Tab'){
-      const buttons=how.hidden?[start,help,document.getElementById('quality'),document.getElementById('fullscreen')].filter(b=>b&&!b.disabled):[back],index=buttons.indexOf(document.activeElement);
+      const buttons=how.hidden?[start,help,document.getElementById('quality'),document.getElementById('fullscreen'),document.getElementById('pwa-toggle')].filter(b=>b&&!b.disabled):[back],index=buttons.indexOf(document.activeElement);
       event.preventDefault();buttons[(index+(event.shiftKey?-1:1)+buttons.length)%buttons.length].focus();
     }
   },true);

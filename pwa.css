@@ -1,0 +1,13 @@
+#pwa-toggle{position:fixed;z-index:900;right:14px;top:80px;padding:9px 12px;border:1px solid #83a49b;border-radius:12px;background:#fff8e9;color:#244c46;font:600 13px/1.4 system-ui,sans-serif;box-shadow:0 3px 10px #132e281f;cursor:pointer;letter-spacing:0}
+#pwa-toggle:focus-visible,#pwa-panel button:focus-visible{outline:3px solid #288a89;outline-offset:3px}
+#pwa-toggle.pwa-menu-button{position:static;display:block;width:auto;margin:12px auto 0;box-shadow:none}
+#pwa-panel{box-sizing:border-box;width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 40px);margin:auto;padding:30px;border:1px solid #bbcec3;border-radius:24px;background:#fffaf0;color:#233f3b;font:15px/1.75 system-ui,sans-serif;text-align:left;box-shadow:0 20px 70px #183d4055;overflow:auto}
+#pwa-panel::backdrop{background:#183d4077;backdrop-filter:blur(3px)}
+#pwa-panel h2{font:700 22px/1.5 system-ui,sans-serif;margin:0 28px 16px 0;color:#233f3b}
+#pwa-panel p{margin:12px 0}#pwa-panel .pwa-eyebrow{margin:0 0 6px;color:#51796b;font-size:12px;font-weight:700;letter-spacing:.06em}
+#pwa-panel form{margin:0}#pwa-panel .pwa-close{position:absolute;right:12px;top:12px;border:0;background:transparent;color:#365e56;font-size:26px;padding:0 9px;min-height:38px;cursor:pointer}
+#pwa-panel .pwa-actions{display:grid;gap:9px;margin:18px 0}#pwa-panel .pwa-actions button{box-sizing:border-box;width:100%;padding:11px 14px;border:1px solid #99b6a9;border-radius:11px;background:#e6f2e6;color:#244c46;font:650 14px/1.6 system-ui,sans-serif;cursor:pointer;box-shadow:none;transform:none}
+#pwa-panel .pwa-actions #pwa-download{background:#286759;color:white;border-color:#286759}#pwa-panel button:disabled{opacity:.48;cursor:default}
+#pwa-panel .pwa-help{font-size:12px;line-height:1.7;color:#567268}#pwa-panel .pwa-update{padding:12px;border-radius:12px;background:#fff0bf;font-size:13px;line-height:1.8}
+#pwa-panel progress{width:100%;height:12px;accent-color:#317c66}#pwa-panel #pwa-progress-text{margin:4px 0;font-size:12px;font-variant-numeric:tabular-nums}
+#pwa-panel [hidden]{display:none!important}@media(max-width:540px){#pwa-toggle{top:73px;right:8px;font-size:11px;padding:7px 9px}#pwa-panel{padding:24px}}

@@ -1,0 +1,26 @@
+{
+  "id": "/toy-rescue-web/",
+  "name": "おもちゃ救助隊",
+  "short_name": "おもちゃ救助隊",
+  "description": "ふたりでおもちゃを救出する協力ゲーム。キーボードとマウスが必要です。",
+  "lang": "ja",
+  "start_url": "/toy-rescue-web/?source=pwa",
+  "scope": "/toy-rescue-web/",
+  "display": "standalone",
+  "background_color": "#dce6dc",
+  "theme_color": "#dce6dc",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
